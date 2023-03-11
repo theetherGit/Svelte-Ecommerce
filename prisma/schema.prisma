@@ -1,0 +1,58 @@
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+model Tea {
+  id             String          @id @default(uuid())
+  name           String
+  productName    String
+  tagline        String
+  description    String          @db.Text
+  slug           String          @unique
+  price          Int
+  itemsPerBag    Int
+  quantity       Int
+  productInfo    Json?
+  additionalInfo Json?
+  blog           Blog[]
+  ProductImages  ProductImages[]
+
+  @@index([id, slug])
+}
+
+model Blog {
+  id          String @id @default(uuid())
+  slug        String @unique
+  title       String
+  headImage   String
+  description String @db.Text
+  product     Tea    @relation(fields: [productId], references: [id])
+  productId   String
+
+  @@index([slug, id])
+}
+
+model NewletterSubscribers {
+  id    String @id @default(uuid())
+  email String @unique
+
+  @@index([email])
+}
+
+model ProductImages {
+  id         String @id @default(uuid())
+  key        String @unique
+  image_link String @unique
+  tea        Tea    @relation(fields: [teaId], references: [id])
+  teaId      String
+
+  @@index([id, teaId, key])
+}
