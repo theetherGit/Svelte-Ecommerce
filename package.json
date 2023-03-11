@@ -11,7 +11,7 @@
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"vercel-build": "prisma generate --data-proxy && vite build",
+		"vercel-build": "prisma generate --data-proxy && vite build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-vercel": "^2.3.1",
