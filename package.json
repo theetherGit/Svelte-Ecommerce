@@ -33,6 +33,7 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^4.11.0",
-		"@splidejs/svelte-splide": "^0.2.9"
+		"@splidejs/svelte-splide": "^0.2.9",
+		"svelte-local-storage-store": "^0.4.0"
 	}
 }

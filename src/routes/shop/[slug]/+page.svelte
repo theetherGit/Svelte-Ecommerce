@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
+	import { addProductToCart, cartViewStore } from '$lib/utils';
 	export let data;
 </script>
 
@@ -113,6 +114,11 @@
 
 					<div class="mt-5 sm:mt-8 sm:flex sm:items-center sm:space-x-5">
 						<button
+							on:click={async () => {
+								$cartViewStore = true;
+								addProductToCart(data.product);
+							}}
+							disabled={data?.product.quantity <= 0}
 							type="button"
 							class="
                                 items-center

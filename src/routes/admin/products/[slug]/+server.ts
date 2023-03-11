@@ -1,5 +1,5 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-import { prisma } from '../../../../lib/server/prisma';
+import { prisma } from '$lib/server/prisma';
 
 export const DELETE: RequestHandler = async ({ request }) => {
 	const { id } = await request.json();

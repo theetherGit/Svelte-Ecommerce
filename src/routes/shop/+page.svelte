@@ -1,7 +1,8 @@
 <script>
-	import {cartViewStore} from "$lib/utils";
+	import { cartViewStore } from '$lib/utils';
 	import { Splide, SplideSlide } from '@splidejs/svelte-splide';
 	export let data;
+	import { addProductToCart } from '$lib/utils';
 </script>
 
 <section class="py-12 sm:py-16 lg:py-20">
@@ -53,9 +54,12 @@
 					<p class="mt-2 text-sm font-bold text-gray-100">&#8377; {product?.price}</p>
 
 					<div class="relative mt-auto">
-						<button on:click={() => {
-							$cartViewStore = true
-						}}
+						<button
+							on:click={async () => {
+								$cartViewStore = true;
+								await addProductToCart(product);
+							}}
+							disabled={product.quantity <= 0}
 							type="button"
 							class="relative flex items-center justify-center w-full px-4 py-4 mt-8 text-sm font-bold text-gray-100 transition-all duration-200 bg-transparent hover:text-white group"
 						>
