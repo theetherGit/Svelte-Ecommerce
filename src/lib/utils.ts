@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import {type Writable, writable} from 'svelte/store';
 export function createSlug(str: string): string {
 	const cleanedStr = str.replace(/[^\w\s]/gi, '').toLowerCase();
 	const slug = cleanedStr.replace(/\s+/g, '-');
@@ -16,4 +16,5 @@ export const fetchHelper = async (method: string, url: string, data: any) => {
 	return await response.json();
 };
 
-export const cartViewStore = writable(false);
+export const cartViewStore: Writable<Boolean> = writable(false);
+export const cartStore: Writable<any> = writable();
