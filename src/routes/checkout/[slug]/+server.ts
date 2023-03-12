@@ -1,9 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
 import { RP_SECRET } from '$env/static/private';
-import crypto from "crypto"
-import {prisma} from "$lib/server/prisma";
-
+import crypto from 'crypto';
+import { prisma } from '$lib/server/prisma';
 
 export const POST: RequestHandler = async ({ request, params }) => {
 	const { rpOrderId, rpPaymentId, rpSignature } = await request.json();
@@ -25,5 +24,5 @@ export const POST: RequestHandler = async ({ request, params }) => {
 		}
 	});
 	console.log(rpOrderId, expectedSignature, rpSignature, expectedSignature === rpSignature);
-	return json({isValid: expectedSignature === rpSignature});
+	return json({ isValid: expectedSignature === rpSignature });
 };

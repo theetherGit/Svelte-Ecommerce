@@ -9,6 +9,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const toBeSaved = structuredClone(cartData);
 	const unableToProcessProduct: any = {};
 	let totalAmount = 0;
+	let newOrderId = '';
 	let error = false;
 	let rpDetails: any = {
 		rpOrderId: '',
@@ -57,11 +58,9 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (userData['paymentMethod'] === 'cod') {
 		message = 'Order placed successfully.';
 	}
-	totalAmount = totalAmount * 100;
-
 	if (userData['paymentMethod'] === 'online') {
 		const paymentOptions = {
-			amount: totalAmount,
+			amount: totalAmount * 100,
 			currency: 'INR',
 			receipt: `online_${receipt_count}`
 		} as Orders.RazorpayOrderCreateRequestBody;
@@ -73,9 +72,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 			if (order !== null) {
 				rpDetails['receiptId'] = order.receipt;
-				rpDetails['rpOrderId'] = order.id;
-				console.log(order, rpDetails);
-
+				rpDetails['rpOrderId'] = newOrderId = order.id;
+				console.log( order, rpDetails );
 			}
 		});
 	}
@@ -89,7 +87,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			paymentMethod: userData['paymentMethod'],
 			totalAmount,
 			paymentIsDone: false,
-			rpOrderId: rpDetails.rpOrderId,
+			rpOrderId: newOrderId,
 			rpPaymentId: rpDetails.rpPaymentId,
 			rpSignature: rpDetails.rpSignature,
 			receiptId: rpDetails.receiptId,
@@ -101,7 +99,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 	});
 
-	console.log(totalAmount, toBeSaved, cartData, userData, unableToProcessProduct, error);
+	console.log(rpDetails);
 
 	return json({
 		totalAmount,

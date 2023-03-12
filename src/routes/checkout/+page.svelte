@@ -5,7 +5,7 @@
 	import toast from 'svelte-french-toast';
 	import { slide, draw } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import crypto from 'crypto'
+	import crypto from 'crypto';
 
 	$: cartViewStore.set(false);
 	$: totalPayment = () => {
@@ -96,7 +96,7 @@
 				cartStore.set(checkoutResponse.unableToProcessProduct);
 				toast.success('Payment successfully completed.');
 				await goto(afterSuccessRedirectURL);
-				return
+				return;
 			},
 			prefill: {
 				name: allData['name'],
@@ -163,7 +163,7 @@
 											<div class="flex-shrink-0">
 												<img
 													class="w-20 h-20 border border-gray-200 rounded-lg"
-													src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/checkout/2/product-1.png"
+													src="https://uploads-ssl.webflow.com/63a80885ac4e7cdae577faf0/63e851d7037f3bab28c8f76c_Mushroom%20box-p-1080.jpg"
 													alt=""
 												/>
 											</div>
@@ -513,7 +513,7 @@
 												<div class="flex space-x-2">
 													<div class="flex h-5 items-center">
 														<input
-																disabled
+															disabled
 															type="radio"
 															id="card"
 															name="card"
