@@ -80,6 +80,7 @@ model PaymentHistory {
 	rpOrderId     String
 	rpPaymentId   String
 	rpSignature   String
+	receipt_id    String
 
 	@@index([id, rpOrderId, rpPaymentId])
 }

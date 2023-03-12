@@ -34,6 +34,7 @@
 	"dependencies": {
 		"@prisma/client": "^4.11.0",
 		"@splidejs/svelte-splide": "^0.2.9",
+		"razorpay": "^2.8.6",
 		"svelte-local-storage-store": "^0.4.0"
 	}
 }

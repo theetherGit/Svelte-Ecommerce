@@ -1,5 +1,7 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
 import { prisma } from '$lib/server/prisma';
+import { rp } from '$lib/server/rpClient';
+import type { Orders } from 'razorpay/dist/types/orders';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const { cartData, userData } = await request.json();
@@ -27,7 +29,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					continue;
 				}
 				const updatedQuantity = currentProduct.quantity - currentItem.quantity;
-				const currentItemTotalAmount= currentItem.quantity * currentProduct.price;
+				const currentItemTotalAmount = currentItem.quantity * currentProduct.price;
 				toBeSaved[key].totalAmount = currentItemTotalAmount;
 				totalAmount += currentItemTotalAmount;
 				await prisma.tea.update({
@@ -37,22 +39,36 @@ export const POST: RequestHandler = async ({ request }) => {
 					data: {
 						quantity: updatedQuantity
 					}
-				})
-
+				});
 			}
 		} catch (e) {
-			console.log("Check final error", e);
+			console.log('Check final error', e);
 			error = true;
 		}
 	}
-	if (userData["paymentMethod"] === 'cod') {
+	if (userData['paymentMethod'] === 'cod') {
 		message = 'Order placed successfully.';
+	}
+	if (userData['paymentMethod'] === 'online') {
+		const paymentOptions = {
+			amount: totalAmount,
+			currency: 'INR',
+			receipt: `test_online_${userData['name']}_${totalAmount}`
+		} as Orders.RazorpayOrderCreateRequestBody;
+		rp.orders.create(paymentOptions, function (err, order) {
+			console.log(order);
+			console.log(err);
+		});
 	}
 
 	console.log(totalAmount, toBeSaved, cartData, userData, unableToProcessProduct);
 
 	return json({
-		totalAmount, toBeSaved, cartData, userData, unableToProcessProduct,
+		totalAmount,
+		toBeSaved,
+		cartData,
+		userData,
+		unableToProcessProduct,
 		success: !error,
 		message: `Here is your quantity:`
 	});
