@@ -102,7 +102,7 @@
 										{data.history.userDetails?.email}
 									</p>
 									<p class="mt-4 text-sm font-medium text-gray-300">
-									{data.history.userDetails?.phone}
+										{data.history.userDetails?.phone}
 									</p>
 									<p class="mt-3 text-sm font-medium text-gray-300">
 										{data.history.userDetails.shipAddress}, {data.history.userDetails.shipState}, {data
@@ -124,13 +124,15 @@
 								<div>
 									<h3 class="text-sm font-bold text-gray-100">Payment Info</h3>
 									<p class="mt-4 text-sm font-medium text-gray-300 capitalize">
-										Method: {data.history.userDetails.paymentMethod}
+										Method: {data.history.userDetails.paymentMethod === 'cod'
+											? 'Cash on Delivery'
+											: data.history.userDetails.paymentMethod}
 									</p>
-									{#if data.history.userDetails.paymentMethod==='online'}
-									<p class="mt-4 text-sm font-medium text-gray-300 capitalize">
-										Method: {data.history.paymentIsDone ? 'Paid' : 'Need To check for Payment History'}
-									</p>
-										{/if}
+									{#if data.history.userDetails.paymentMethod === 'online'}
+										<p class="mt-4 text-sm font-medium text-gray-300 capitalize">
+											Status: {data.history.paymentIsDone ? 'Paid' : 'Unpaid'}
+										</p>
+									{/if}
 									<p class="mt-1 text-sm font-medium text-gray-300" />
 								</div>
 							</div>

@@ -3,7 +3,7 @@ import { json } from '@sveltejs/kit';
 import { RP_SECRET } from '$env/static/private';
 import crypto from 'crypto';
 import { prisma } from '$lib/server/prisma';
-import {rp} from "$lib/server/rpClient";
+import { rp } from '$lib/server/rpClient';
 
 export const POST: RequestHandler = async ({ request, params }) => {
 	const { rpOrderId, rpPaymentId, rpSignature } = await request.json();
@@ -16,9 +16,9 @@ export const POST: RequestHandler = async ({ request, params }) => {
 	let paymentStatus;
 	if (rpOrderId) {
 		try {
-			paymentStatus = await rp.orders.fetch( rpOrderId );
+			paymentStatus = await rp.orders.fetch(rpOrderId);
 		} catch (e) {
-			console.log( e );
+			console.log(e);
 		}
 	}
 
@@ -33,5 +33,5 @@ export const POST: RequestHandler = async ({ request, params }) => {
 			paymentIsDone: paymentStatus?.status === 'paid'
 		}
 	});
-	return json({ });
+	return json({});
 };
