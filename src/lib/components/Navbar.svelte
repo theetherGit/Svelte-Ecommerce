@@ -1,7 +1,7 @@
 <script>
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
-	import {cartViewStore} from "$lib/utils"
+	import { cartViewStore } from '$lib/utils';
 	import { afterNavigate } from '$app/navigation';
 
 	let show = false;
@@ -14,9 +14,9 @@
 	];
 
 	afterNavigate(() => {
-		if (show) return show =false
+		if (show) return (show = false);
 	});
-	$: show = $cartViewStore ? false : show
+	$: show = $cartViewStore ? false : show;
 </script>
 
 <header class="py-4 sm:py-6">
@@ -69,7 +69,7 @@
 					</a>
 				{/each}
 				<button
-						on:click={() => $cartViewStore = true}
+					on:click={() => ($cartViewStore = true)}
 					class="text-base font-normal text-gray-400 transition-all duration-200 hover:text-white bg-gray-500 px-4 py-2 rounded-lg"
 				>
 					Cart
@@ -80,16 +80,17 @@
 			<nav transition:slide class="z-10 fixed bg-black w-full text-center">
 				<div class="flex flex-col pt-8 pb-4 space-y-6 opacity-50">
 					{#each allPages as pageData}
-					<a
-						href={pageData.path}
-						title=""
-						class="text-base font-normal text-gray-400 transition-all duration-200 hover:text-white"
-					>
-						{pageData.name}
-					</a>
-						{/each}
+						<a
+							href={pageData.path}
+							title=""
+							class="text-base font-normal text-gray-400 transition-all duration-200 hover:text-white"
+						>
+							{pageData.name}
+						</a>
+					{/each}
 
-					<button on:click={() => $cartViewStore = true}
+					<button
+						on:click={() => ($cartViewStore = true)}
 						href="#"
 						title=""
 						class="text-base font-normal text-gray-400 transition-all duration-200 hover:text-white"
