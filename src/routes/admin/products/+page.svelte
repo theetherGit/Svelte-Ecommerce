@@ -4,7 +4,6 @@
 	import { invalidateAll } from '$app/navigation';
 
 	export let data;
-	console.log(data.products);
 	const deleteProduct = async (id: string) => {
 		const response = await fetchHelper('DELETE', `/admin/products/${id}`, { id });
 		await invalidateAll();

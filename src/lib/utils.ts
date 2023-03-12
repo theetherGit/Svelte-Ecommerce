@@ -15,8 +15,8 @@ export const fetchHelper = async (method: string, url: string, data: any) => {
 			'content-type': 'application/json'
 		}
 	};
-	if (method.toLowerCase() !== "get") {
-		options['body'] = JSON.stringify(data)
+	if (method.toLowerCase() !== 'get') {
+		options['body'] = JSON.stringify(data);
 	}
 	const response = await fetch(url, options);
 	return await response.json();
@@ -49,7 +49,6 @@ export const addProductToCart = async (data: any) => {
 export const removeProductFromCart = async (key: any) => {
 	let currentProducts: any = get(cartStore);
 	delete currentProducts[key];
-	console.log(currentProducts);
 	cartStore.set(currentProducts);
 	toast.success(`Product deleted successfully from cart.`);
 	return;
@@ -58,7 +57,7 @@ export const removeProductFromCart = async (key: any) => {
 export const increaseProductQuantityInCart = async (key: any) => {
 	let currentProducts: any = get(cartStore);
 	const dataForCurrentUpdate = currentProducts[key];
-	const currentQuantity = await fetchHelper("GET", `/shop/${key}`, { key });
+	const currentQuantity = await fetchHelper('GET', `/shop/${key}`, { key });
 	if (currentQuantity.quantity <= dataForCurrentUpdate.quantity) {
 		toast.error(`Product ${dataForCurrentUpdate?.name}'s is not in stock.`);
 		return;

@@ -3,7 +3,6 @@ import { allBlogs, productById, prisma } from '$lib/server/prisma';
 import { createSlug } from '$lib/utils';
 import { redirect } from '@sveltejs/kit';
 export const load: PageServerLoad = ({ params }) => {
-	console.log(params);
 	if (params.slug === 'new') {
 		return {
 			allBlogs: allBlogs()
@@ -17,7 +16,6 @@ export const load: PageServerLoad = ({ params }) => {
 export const actions: Actions = {
 	default: async ({ request, cookies, url }) => {
 		const formatData: Record<any, any> = Object.fromEntries(await request.formData());
-		console.log(formatData);
 		let id = '-1';
 		if (formatData?.id) {
 			id = formatData.id;
@@ -52,7 +50,6 @@ export const actions: Actions = {
 				productInfo: {}
 			}
 		});
-		console.log(newProduct);
 		throw redirect(307, `/admin/products/${newProduct.id}`);
 	}
 };
