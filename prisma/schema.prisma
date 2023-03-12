@@ -35,7 +35,7 @@ model Blog {
 	title       String
 	headImage   String
 	description String @db.Text
-	product     Tea    @relation(fields: [productId], references: [id])
+	product     Tea    @relation(fields: [productId], references: [id], onDelete: Cascade)
 	productId   String
 
 	@@index([slug, id])
@@ -52,7 +52,7 @@ model ProductImages {
 	id         String @id @default(uuid())
 	key        String @unique
 	image_link String @unique
-	tea        Tea    @relation(fields: [teaId], references: [id])
+	tea        Tea    @relation(fields: [teaId], references: [id], onDelete: Cascade)
 	teaId      String
 
 	@@index([id, teaId, key])
@@ -60,9 +60,9 @@ model ProductImages {
 
 model Order {
 	id               String         @id @default(uuid())
-	product          Tea            @relation(fields: [productId], references: [id])
+	product          Tea            @relation(fields: [productId], references: [id], onDelete: Cascade)
 	productId        String
-	payment          PaymentHistory @relation(fields: [paymentHistoryId], references: [id])
+	payment          PaymentHistory @relation(fields: [paymentHistoryId], references: [id], onDelete: Cascade)
 	paymentHistoryId String
 
 	@@index([id, productId, paymentHistoryId])

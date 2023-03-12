@@ -5,6 +5,8 @@
 	import toast from 'svelte-french-toast';
 	import { slide, draw } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
+	import crypto from 'crypto'
+
 	$: cartViewStore.set(false);
 	$: totalPayment = () => {
 		let sumToPay = 0;
@@ -56,6 +58,25 @@
 			rpPaymentId: '',
 			rpSignature: ''
 		};
+		const checkoutResponse = await fetchHelper('POST', '/checkout', {
+			userData: allData,
+			cartData: $cartStore
+		});
+		if (!checkoutResponse.success) {
+			toast.error(checkoutResponse.message);
+			enableCheckOutLoader = false;
+		}
+		afterSuccessRedirectURL = `/checkout/${checkoutResponse.paymentHistory.id}`;
+		if (Object.keys(checkoutResponse.toBeSaved).length < 1) {
+			toast.error("Products you have in cart can't be processed because of availability");
+			enableCheckOutLoader = false;
+			return;
+		}
+		toast.success(checkoutResponse.message);
+		if (checkoutResponse.userData['paymentMethod'] === 'cod') {
+			await goto(afterSuccessRedirectURL);
+			return;
+		}
 		const options = {
 			key: PUBLIC_RP_KEY,
 			amount: '',
@@ -63,16 +84,19 @@
 			name: 'Test FromBhutan',
 			description: 'Test Transaction',
 			order_id: '', //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-			handler: function (response) {
-				afterPaymentRpDetails['rpOrderId'] = response.razorpay_payment_id;
+			handler: async function (response) {
+				afterPaymentRpDetails['rpOrderId'] = checkoutResponse.rpDetails.rpOrderId;
 				afterPaymentRpDetails['rpPaymentId'] = response.razorpay_payment_id;
 				afterPaymentRpDetails['rpSignature'] = response.razorpay_signature;
-				const validation = fetchHelper('POST', afterSuccessRedirectURL.toString(), {
-					rpOrderId: afterPaymentRpDetails['rpOrderId'],
-					rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
-					rpSignature: afterPaymentRpDetails['rpSignature']
-				});
+				// const validation = fetchHelper('POST', afterSuccessRedirectURL.toString(), {
+				// 	rpOrderId: afterPaymentRpDetails['rpOrderId'],
+				// 	rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
+				// 	rpSignature: afterPaymentRpDetails['rpSignature']
+				// });
+				cartStore.set(checkoutResponse.unableToProcessProduct);
 				toast.success('Payment successfully completed.');
+				await goto(afterSuccessRedirectURL);
+				return
 			},
 			prefill: {
 				name: allData['name'],
@@ -84,27 +108,9 @@
 				color: '#000'
 			}
 		};
-		const response = await fetchHelper('POST', '/checkout', {
-			userData: allData,
-			cartData: $cartStore
-		});
-		if (!response.success) {
-			toast.error(response.message);
-			enableCheckOutLoader = false;
-		}
-		afterSuccessRedirectURL = `/checkout/${response.paymentHistory.id}`;
-		if (Object.keys(response.toBeSaved).length < 1) {
-			toast.error("Products you have in cart can't be processed because of availability");
-			enableCheckOutLoader = false;
-			return;
-		}
-		toast.success(response.message);
-		if (response.userData['paymentMethod'] === 'cod') {
-			await goto(afterSuccessRedirectURL);
-			return;
-		}
-		options['order_id'] = response.rpDetails.rpOrderId;
-		options['amount'] = response.totalAmount;
+
+		options['order_id'] = checkoutResponse.rpDetails.rpOrderId;
+		options['amount'] = checkoutResponse.totalAmount;
 		let rpNewPayment = new Razorpay(options);
 		rpNewPayment.on('payment.failed', function (response) {
 			console.log(response.error, response);
@@ -507,6 +513,7 @@
 												<div class="flex space-x-2">
 													<div class="flex h-5 items-center">
 														<input
+																disabled
 															type="radio"
 															id="card"
 															name="card"

@@ -1,3 +1,8 @@
+<script>
+	export let data;
+	const orders = data.history.processed
+</script>
+
 <section class="py-12 bg-white sm:py-16 lg:py-20">
 	<div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
 		<div class="max-w-6xl mx-auto">
@@ -17,7 +22,7 @@
 				<div class="ml-4">
 					<h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">We received your order!</h1>
 					<p class="mt-2 text-sm font-normal text-gray-600">
-						Your order #2939993 is completed and ready to ship
+						Your order #{data.history.id} is completed and ready to ship
 					</p>
 				</div>
 			</div>
@@ -27,9 +32,10 @@
 			>
 				<div class="pt-6 border-t border-gray-200 lg:col-span-3 xl:col-span-4">
 					<h2 class="text-sm font-bold text-gray-500">Order Details</h2>
-
 					<div class="flow-root mt-8">
+						{#if Object.keys(orders) > 0}
 						<ul class="divide-y divide-gray-200 -my-7">
+							{#each Object.keys(orders) as order}
 							<li class="flex items-stretch py-7">
 								<div class="flex-shrink-0">
 									<img
@@ -41,33 +47,16 @@
 
 								<div class="flex flex-col justify-between ml-5">
 									<div class="flex-1">
-										<p class="text-base font-bold text-gray-900">Apple Watch Series 7</p>
+										<p class="text-base font-bold text-gray-900">{order.name}</p>
 										<p class="mt-1.5 text-sm font-medium text-gray-500">Golden</p>
 									</div>
 
 									<p class="mt-auto text-sm font-bold text-gray-900">$359</p>
 								</div>
 							</li>
-
-							<li class="flex items-stretch py-7">
-								<div class="flex-shrink-0">
-									<img
-										class="object-cover rounded-lg w-28 h-28"
-										src="https://cdn.rareblocks.xyz/collection/clarity-ecommerce/images/order-confirmation/2/product-2.png"
-										alt=""
-									/>
-								</div>
-
-								<div class="flex flex-col justify-between ml-5">
-									<div class="flex-1">
-										<p class="text-base font-bold text-gray-900">Beylob 90 Speaker</p>
-										<p class="mt-1.5 text-sm font-medium text-gray-500">Space Gray</p>
-									</div>
-
-									<p class="mt-auto text-sm font-bold text-gray-900">$49</p>
-								</div>
-							</li>
+								{/each}
 						</ul>
+							{/if}
 					</div>
 
 					<hr class="mt-6 border-gray-200" />

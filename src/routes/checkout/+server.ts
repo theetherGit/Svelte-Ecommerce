@@ -3,13 +3,14 @@ import { prisma } from '$lib/server/prisma';
 import { rp } from '$lib/server/rpClient';
 import type { Orders } from 'razorpay/dist/types/orders';
 
+let receipt_count = 0;
 export const POST: RequestHandler = async ({ request }) => {
 	const { cartData, userData } = await request.json();
 	const toBeSaved = structuredClone(cartData);
 	const unableToProcessProduct: any = {};
 	let totalAmount = 0;
 	let error = false;
-	const rpDetails = {
+	let rpDetails: any = {
 		rpOrderId: '',
 		rpPaymentId: '',
 		rpSignature: '',
@@ -56,28 +57,30 @@ export const POST: RequestHandler = async ({ request }) => {
 	if (userData['paymentMethod'] === 'cod') {
 		message = 'Order placed successfully.';
 	}
+	totalAmount = totalAmount * 100;
+
 	if (userData['paymentMethod'] === 'online') {
 		const paymentOptions = {
 			amount: totalAmount,
 			currency: 'INR',
-			receipt: `online_${crypto.randomUUID()}`,
-			notes: { toBeSaved }
+			receipt: `online_${receipt_count}`
 		} as Orders.RazorpayOrderCreateRequestBody;
+		receipt_count++;
 		rp.orders.create(paymentOptions, function (err, order) {
-			console.log('order create err', err);
 			if (err) {
 				error = true;
 				message = 'Unable to create order please try again.';
 			}
-			if (order) {
-				rpDetails['receiptId'] = order['receipt'] as string;
-				rpDetails['rpOrderId'] = order['id'] as string;
+			if (order !== null) {
+				rpDetails['receiptId'] = order.receipt;
+				rpDetails['rpOrderId'] = order.id;
+				console.log(order, rpDetails);
+
 			}
 		});
 	}
 
 	const finalOrders = Object.keys(toBeSaved).map((key) => ({ productId: key }));
-	totalAmount = totalAmount * 100;
 	const newPaymentHistory = await prisma.paymentHistory.create({
 		data: {
 			unProcessed: unableToProcessProduct,
@@ -86,10 +89,10 @@ export const POST: RequestHandler = async ({ request }) => {
 			paymentMethod: userData['paymentMethod'],
 			totalAmount,
 			paymentIsDone: false,
-			rpOrderId: rpDetails['rpOrderId'],
-			rpPaymentId: rpDetails['rpPaymentId'],
-			rpSignature: rpDetails['rpSignature'],
-			receiptId: rpDetails['receiptId'],
+			rpOrderId: rpDetails.rpOrderId,
+			rpPaymentId: rpDetails.rpPaymentId,
+			rpSignature: rpDetails.rpSignature,
+			receiptId: rpDetails.receiptId,
 			Order: {
 				createMany: {
 					data: finalOrders

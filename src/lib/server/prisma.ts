@@ -21,6 +21,14 @@ export const productById = async (id: string) => {
 	});
 };
 
+export const paymentById = async (id: string) => {
+	return await prisma.paymentHistory.findUnique({
+		where: {
+			id
+		}
+	});
+};
+
 export const productBySlug = async (slug: string) => {
 	return await prisma.tea.findUnique({
 		where: {
