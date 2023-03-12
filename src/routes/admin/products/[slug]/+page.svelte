@@ -5,6 +5,7 @@
 	export let data;
 	$: product = data?.product;
 	export let form;
+	$: console.log(form);
 </script>
 
 <div class="flex flex-col flex-1 xl:pl-64">

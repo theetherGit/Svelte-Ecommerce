@@ -62,6 +62,7 @@
 			userData: allData,
 			cartData: $cartStore
 		});
+		cartStore.set(checkoutResponse.unableToProcessProduct);
 		if (!checkoutResponse.success) {
 			toast.error(checkoutResponse.message);
 			enableCheckOutLoader = false;
@@ -85,15 +86,16 @@
 			description: 'Test Transaction',
 			order_id: '', //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
 			handler: async function (response) {
+				enableCheckOutLoader = true;
 				afterPaymentRpDetails['rpOrderId'] = checkoutResponse.rpDetails.rpOrderId;
 				afterPaymentRpDetails['rpPaymentId'] = response.razorpay_payment_id;
 				afterPaymentRpDetails['rpSignature'] = response.razorpay_signature;
-				// const validation = fetchHelper('POST', afterSuccessRedirectURL.toString(), {
-				// 	rpOrderId: afterPaymentRpDetails['rpOrderId'],
-				// 	rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
-				// 	rpSignature: afterPaymentRpDetails['rpSignature']
-				// });
-				cartStore.set(checkoutResponse.unableToProcessProduct);
+				const validation = await fetchHelper('POST', afterSuccessRedirectURL.toString(), {
+					rpOrderId: afterPaymentRpDetails['rpOrderId'],
+					rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
+					rpSignature: afterPaymentRpDetails['rpSignature']
+				});
+				enableCheckOutLoader = false;
 				toast.success('Payment successfully completed.');
 				await goto(afterSuccessRedirectURL);
 				return;

@@ -3,6 +3,7 @@ import { json } from '@sveltejs/kit';
 import { RP_SECRET } from '$env/static/private';
 import crypto from 'crypto';
 import { prisma } from '$lib/server/prisma';
+import {rp} from "$lib/server/rpClient";
 
 export const POST: RequestHandler = async ({ request, params }) => {
 	const { rpOrderId, rpPaymentId, rpSignature } = await request.json();
@@ -11,18 +12,26 @@ export const POST: RequestHandler = async ({ request, params }) => {
 			id: params.slug
 		}
 	});
-	const key = (rpOrderId + rpPaymentId).toString();
-	const expectedSignature = await crypto.createHmac('sha256', RP_SECRET).update(key).digest('hex');
-	await prisma.paymentHistory.update({
+
+	let paymentStatus;
+	if (rpOrderId) {
+		try {
+			paymentStatus = await rp.orders.fetch( rpOrderId );
+		} catch (e) {
+			console.log( e );
+		}
+	}
+
+	const newData = await prisma.paymentHistory.update({
 		where: {
 			id: params.slug
 		},
 		data: {
+			rpOrderId: rpOrderId,
 			rpSignature: rpSignature,
 			rpPaymentId: rpPaymentId,
-			paymentIsDone: expectedSignature === rpSignature
+			paymentIsDone: paymentStatus?.status === 'paid'
 		}
 	});
-	console.log(rpOrderId, expectedSignature, rpSignature, expectedSignature === rpSignature);
-	return json({ isValid: expectedSignature === rpSignature });
+	return json({ });
 };

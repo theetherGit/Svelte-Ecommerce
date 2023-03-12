@@ -73,7 +73,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			if (order !== null) {
 				rpDetails['receiptId'] = order.receipt;
 				rpDetails['rpOrderId'] = newOrderId = order.id;
-				console.log( order, rpDetails );
+				console.log(order, rpDetails);
 			}
 		});
 	}

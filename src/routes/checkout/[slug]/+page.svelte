@@ -1,7 +1,7 @@
 <script>
 	export let data;
 	const orders = data.history.processed;
-	console.log(orders, Object.keys(orders).length);
+	console.log(data, Object.keys(orders).length);
 </script>
 
 <section class="py-12 sm:py-16 lg:py-20">
@@ -98,6 +98,12 @@
 									<p class="mt-4 text-sm font-medium text-gray-300">
 										{data.history.userDetails?.name}
 									</p>
+									<p class="mt-4 text-sm font-medium text-gray-300">
+										{data.history.userDetails?.email}
+									</p>
+									<p class="mt-4 text-sm font-medium text-gray-300">
+									{data.history.userDetails?.phone}
+									</p>
 									<p class="mt-3 text-sm font-medium text-gray-300">
 										{data.history.userDetails.shipAddress}, {data.history.userDetails.shipState}, {data
 											.history.userDetails.shipPinCode}
@@ -120,6 +126,11 @@
 									<p class="mt-4 text-sm font-medium text-gray-300 capitalize">
 										Method: {data.history.userDetails.paymentMethod}
 									</p>
+									{#if data.history.userDetails.paymentMethod==='online'}
+									<p class="mt-4 text-sm font-medium text-gray-300 capitalize">
+										Method: {data.history.paymentIsDone ? 'Paid' : 'Need To check for Payment History'}
+									</p>
+										{/if}
 									<p class="mt-1 text-sm font-medium text-gray-300" />
 								</div>
 							</div>

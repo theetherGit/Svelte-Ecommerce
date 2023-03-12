@@ -22,7 +22,7 @@
 				<div class="mt-8 md:absolute md:mt-0 md:top-32 lg:top-0 md:right-0">
 					<img
 						class="w-full max-w-xs mx-auto lg:max-w-lg xl:max-w-xl"
-						src="hero2.png"
+						src="load2.png"
 						alt="frombhutan.in landing page hero"
 					/>
 				</div>

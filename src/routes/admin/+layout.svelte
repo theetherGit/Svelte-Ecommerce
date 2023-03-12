@@ -1,17 +1,18 @@
 <script>
 	import { page } from '$app/stores';
-	import { dbIcon, newsIcon, blogIcon } from '$lib/icons';
+	import { dbIcon, newsIcon, blogIcon, recordIcon } from '$lib/icons';
 
 	const allAdminPages = [
 		{ name: 'Products', path: '/admin/products', icon: dbIcon },
+		{ name: 'Order History', path: '/admin/orderHistory', icon: recordIcon },
 		{ name: 'Blog', path: '/admin/blog', icon: blogIcon },
 		{ name: 'Newsletter', path: '/admin/newsletter', icon: newsIcon }
 	];
 </script>
 
-<div class="hidden py-3 border-t border-gray-200 lg:block">
+<div class="py-3 border-t border-gray-200 lg:block">
 	<div class="container px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
-		<div class="flex items-center space-x-4">
+		<div class="flex items-center space-x-4 flex-row flex-wrap space-y-2">
 			{#each allAdminPages as adminPage}
 				<a
 					href={adminPage.path}
