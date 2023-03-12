@@ -9,6 +9,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const unableToProcessProduct: any = {};
 	let totalAmount = 0;
 	let error = false;
+	const rp_details = {
+		rpOrderId: '',
+		rpPaymentId: '',
+		rpSignature: '',
+		receiptId: '',
+	};
 	let message = 'Order successfully created, Please complete your payment.';
 	for (const key of Object.keys(cartData)) {
 		const currentItem = cartData[key];
@@ -32,6 +38,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				const currentItemTotalAmount = currentItem.quantity * currentProduct.price;
 				toBeSaved[key].totalAmount = currentItemTotalAmount;
 				totalAmount += currentItemTotalAmount;
+				console.log(totalAmount)
 				await prisma.tea.update({
 					where: {
 						id: key
@@ -53,13 +60,22 @@ export const POST: RequestHandler = async ({ request }) => {
 		const paymentOptions = {
 			amount: totalAmount,
 			currency: 'INR',
-			receipt: `test_online_${userData['name']}_${totalAmount}`
+			receipt: `test_online_${userData['name']}_${totalAmount}_${crypto.randomUUID()}`,
+			notes: toBeSaved
 		} as Orders.RazorpayOrderCreateRequestBody;
 		rp.orders.create(paymentOptions, function (err, order) {
-			console.log(order);
-			console.log(err);
+			if (err) {
+				error = true;
+				message = 'Unable to create order please try again.';
+			}
+			if (order) {
+				rp_details["receiptId"] = order['receipt'] as string;
+				rp_details["rpOrderId"] = order['id'] as string;
+			}
 		});
 	}
+
+	// const newPaymentHistory = await prisma.paymentHistory()
 
 	console.log(totalAmount, toBeSaved, cartData, userData, unableToProcessProduct);
 
