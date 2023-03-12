@@ -1,5 +1,8 @@
 <script>
+	import { goto } from '$app/navigation';
+	import { PUBLIC_RP_KEY } from '$env/static/public';
 	import { cartStore, cartViewStore, fetchHelper } from '$lib/utils';
+	import toast from 'svelte-french-toast';
 	import { slide, draw } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	$: cartViewStore.set(false);
@@ -47,10 +50,77 @@
 
 	const handleServerSubmission = async () => {
 		enableCheckOutLoader = true;
+		let afterSuccessRedirectURL;
+		const afterPaymentRpDetails = {
+			rpOrderId: '',
+			rpPaymentId: '',
+			rpSignature: ''
+		};
+		const options = {
+			key: PUBLIC_RP_KEY,
+			amount: '',
+			currency: 'INR',
+			name: 'Test FromBhutan',
+			description: 'Test Transaction',
+			order_id: '', //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+			handler: function (response) {
+				afterPaymentRpDetails['rpOrderId'] = response.razorpay_payment_id;
+				afterPaymentRpDetails['rpPaymentId'] = response.razorpay_payment_id;
+				afterPaymentRpDetails['rpSignature'] = response.razorpay_signature;
+				const validation = fetchHelper('POST', afterSuccessRedirectURL.toString(), {
+					rpOrderId: afterPaymentRpDetails['rpOrderId'],
+					rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
+					rpSignature: afterPaymentRpDetails['rpSignature']
+				});
+				toast.success('Payment successfully completed.');
+			},
+			prefill: {
+				name: allData['name'],
+				email: allData['email'],
+				contact: allData['phone']
+			},
+			notes: {},
+			theme: {
+				color: '#000'
+			}
+		};
 		const response = await fetchHelper('POST', '/checkout', {
 			userData: allData,
 			cartData: $cartStore
 		});
+		if (!response.success) {
+			toast.error(response.message);
+			enableCheckOutLoader = false;
+		}
+		afterSuccessRedirectURL = `/checkout/${response.paymentHistory.id}`;
+		if (Object.keys(response.toBeSaved).length < 1) {
+			toast.error("Products you have in cart can't be processed because of availability");
+			enableCheckOutLoader = false;
+			return;
+		}
+		toast.success(response.message);
+		if (response.userData['paymentMethod'] === 'cod') {
+			await goto(afterSuccessRedirectURL);
+			return;
+		}
+		options['order_id'] = response.rpDetails.rpOrderId;
+		options['amount'] = response.totalAmount;
+		let rpNewPayment = new Razorpay(options);
+		rpNewPayment.on('payment.failed', function (response) {
+			console.log(response.error, response);
+			toast.error(
+				`While completing your payment an error occurred. ${response.error.description}, ${response.error.reason}`
+			);
+			// alert(response.error.code);
+			// alert(response.error.description);
+			// alert(response.error.source);
+			// alert(response.error.step);
+			// alert(response.error.reason);
+			// alert(response.error.metadata.order_id);
+			// alert(response.error.metadata.payment_id);
+		});
+		rpNewPayment.open();
+
 		enableCheckOutLoader = false;
 	};
 
@@ -61,6 +131,9 @@
 	}
 </script>
 
+<svelte:head>
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</svelte:head>
 <section class="py-12 sm:py-16 lg:py-20">
 	<div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
 		<div class="flex items-center justify-center">
