@@ -1,9 +1,11 @@
 <script>
 	import { navigating } from '$app/stores';
+	import { blur, fade } from 'svelte/transition';
+	import {quadInOut} from "svelte/easing";
 </script>
 
 {#if $navigating}
-	<div class="flex justify-center items-center h-screen">
+	<div class="flex justify-center items-center h-screen" in:blur={{amount: 10}} out:fade={{easing: quadInOut}}>
 		<div
 			class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gray-100 rounded-lg p-8 shadow-xl backdrop-filter backdrop-blur-lg backdrop-saturate-150"
 		>

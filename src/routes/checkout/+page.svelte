@@ -62,7 +62,6 @@
 			userData: allData,
 			cartData: $cartStore
 		});
-		cartStore.set(checkoutResponse.unableToProcessProduct);
 		if (!checkoutResponse.success) {
 			toast.error(checkoutResponse.message);
 			enableCheckOutLoader = false;
@@ -75,6 +74,7 @@
 		}
 		toast.success(checkoutResponse.message);
 		if (checkoutResponse.userData['paymentMethod'] === 'cod') {
+			cartStore.set(checkoutResponse.unableToProcessProduct);
 			await goto(afterSuccessRedirectURL);
 			return;
 		}
@@ -95,6 +95,7 @@
 					rpPaymentId: afterPaymentRpDetails['rpPaymentId'],
 					rpSignature: afterPaymentRpDetails['rpSignature']
 				});
+				cartStore.set(checkoutResponse.unableToProcessProduct);
 				enableCheckOutLoader = false;
 				toast.success('Payment successfully completed.');
 				await goto(afterSuccessRedirectURL);
